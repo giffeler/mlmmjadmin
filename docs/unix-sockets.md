@@ -48,6 +48,8 @@ SOCKET_TEST_PYTHON=/absolute/path/to/venv/bin/python bash downstream_tests/run-m
 
 The runner creates its own temporary data directory, starts MariaDB with `--skip-networking`, and verifies real AF_UNIX connections, queries, and error behavior. It then restarts only that private instance with loopback TCP and a temporary certificate to exercise the existing TCP/TLS paths. It cleans up its own instance and data on exit. It never starts, stops, or reconfigures a system database service.
 
+GitHub Actions tests both the runner distribution's MariaDB and the official `mariadb:11.8.6` image. The optional `SOCKET_TEST_IMAGE` runner setting selects an installed Docker image, mounting only the disposable database directory. Clients remain outside the container so Linux socket permissions are tested across the mount.
+
 GitHub Actions additionally runs clients under a disposable service-named account with a dedicated socket-access group. These runner accounts model permission boundaries; they are not evidence of the target server's actual UID/group membership or sandbox configuration. Test credentials and SQL fixtures are disposable and must never be used for deployment.
 
 See [downstream maintenance](downstream-maintenance.md) for upgrade and rollback preparation.

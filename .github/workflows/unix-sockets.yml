@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         sqlalchemy: ['2.0.57']
+        mariadb: ['distribution', '11.8.6']
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -24,8 +25,12 @@ jobs:
           sudo apt-get install -y mariadb-server
           python -m venv /tmp/mail-socket-venv
           /tmp/mail-socket-venv/bin/pip install -r downstream_tests/requirements.txt 'SQLAlchemy==${{ matrix.sqlalchemy }}'
+      - name: Pull matching MariaDB version
+        if: matrix.mariadb != 'distribution'
+        run: docker pull mariadb:${{ matrix.mariadb }}
       - name: Test Unix sockets, permissions, TCP and TLS
         env:
+          SOCKET_TEST_IMAGE: ${{ matrix.mariadb != 'distribution' && format('mariadb:{0}', matrix.mariadb) || '' }}
           SOCKET_TEST_PYTHON: /tmp/mail-socket-venv/bin/python
           SOCKET_TEST_USER: mlmmj
         run: bash downstream_tests/run-mariadb.sh

@@ -16,10 +16,20 @@ cleanup() {
     rm -rf -- "$socket_test_root"
 }
 trap cleanup EXIT
-mariadb-install-db --no-defaults --datadir="$socket_test_root/data"     --auth-root-authentication-method=normal --skip-test-db >"$socket_test_root/init.log" 2>&1
+socket_test_init=(mariadb-install-db)
+socket_test_server=(mariadbd)
+if [[ -n "${SOCKET_TEST_IMAGE:-}" ]]; then
+    # Mount only the disposable database directory into the official image.
+    # Host networking is needed only for the second, loopback TCP test phase.
+    socket_test_container=(docker run --rm --network host --user "$(id -u):$(id -g)"
+        --mount "type=bind,source=$socket_test_root,target=$socket_test_root")
+    socket_test_init=("${socket_test_container[@]}" --entrypoint mariadb-install-db "$SOCKET_TEST_IMAGE")
+    socket_test_server=("${socket_test_container[@]}" --entrypoint mariadbd "$SOCKET_TEST_IMAGE")
+fi
+"${socket_test_init[@]}" --no-defaults --datadir="$socket_test_root/data"     --auth-root-authentication-method=normal --skip-test-db >"$socket_test_root/init.log" 2>&1
 socket_test_path="$socket_test_root/db.sock"
 start_database() {
-    mariadbd --no-defaults --datadir="$socket_test_root/data"         --socket="$socket_test_path" --pid-file="$socket_test_root/db.pid"         --log-error="$socket_test_root/error.log" --skip-log-bin "$@" &
+    "${socket_test_server[@]}" --no-defaults --datadir="$socket_test_root/data"         --socket="$socket_test_path" --pid-file="$socket_test_root/db.pid"         --log-error="$socket_test_root/error.log" --skip-log-bin "$@" &
     socket_test_pid=$!
     for attempt in {1..60}; do
         if mariadb-admin --no-defaults --socket="$socket_test_path" --user=root ping >/dev/null 2>&1; then
