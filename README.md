@@ -1,3 +1,5 @@
+Downstream branch: optional [MySQL/MariaDB Unix sockets](docs/unix-sockets.md). See [maintenance and rollback preparation](docs/downstream-maintenance.md). Upstream documentation follows.
+
 # mlmmjadmin
 
 > Don't forget to check out our lightweight email archiving software: https://spiderd.io/

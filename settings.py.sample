@@ -45,3 +45,7 @@ api_auth_tokens = []
 
 # Load extra config file.
 #from custom_settings import *
+
+# Optional MySQL Unix sockets. See docs/unix-sockets.md.
+# Socket mode does not use TCP host/port or TCP TLS options.
+#iredmail_sql_db_socket = '/run/mysqld/mysqld.sock'

@@ -1,0 +1,9 @@
+pytest==8.4.2
+PyMySQL==1.2.3
+dnspython==2.9.2
+simplejson==4.2.0
+multipart==2.0.1
+requests==2.34.2
+Jinja2==3.1.6
+cheroot==11.1.2
+psycopg2-binary==2.9.13

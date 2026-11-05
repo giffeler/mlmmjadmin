@@ -337,3 +337,6 @@ MLMMJ_DEFAULT_REMOVED_HEADERS = [
     # 'DKIM-Signature:',
     # 'Authentication-Results:',
 ]
+
+# Optional MySQL Unix sockets. Empty values preserve TCP behavior.
+iredmail_sql_db_socket = ''

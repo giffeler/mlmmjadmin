@@ -36,3 +36,7 @@
 
         Remove related SQL/LDAP/... data in your backend to remove a mailing list
         account.
+
+## Local MySQL/MariaDB transport
+
+The downstream SQL backend supports an optional `iredmail_sql_db_socket` setting. See [Unix socket configuration](unix-sockets.md).

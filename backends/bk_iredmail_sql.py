@@ -20,13 +20,16 @@
 #   - iredmail_sql_db_user: SQL username. e.g. 'vmailadmin'.
 #                           Read+write privilege is required.
 #   - iredmail_sql_db_password: SQL user password.
-#   - iredmail_sql_db_use_ssl (optional): force secure connection.
+#   - iredmail_sql_db_use_ssl (optional): force secure TCP connection.
+#   - iredmail_sql_db_socket (optional): absolute MySQL socket path. When set,
+#     TCP server/port and TCP TLS options are unused. See docs/unix-sockets.md.
 
 import uuid
 import web
 from libs import utils, form_utils
 from libs.logger import logger
 import settings
+from libs.sql_transport import web_transport
 
 
 class MYSQLWrap(object):
@@ -39,13 +42,11 @@ class MYSQLWrap(object):
     @staticmethod
     def __connect():
         conn = web.database(dbn='mysql',
-                            host=settings.iredmail_sql_db_server,
-                            port=int(settings.iredmail_sql_db_port),
-                            ssl={"ssl": settings.__dict__.get("iredmail_sql_db_use_ssl", False)},
                             db=settings.iredmail_sql_db_name,
                             user=settings.iredmail_sql_db_user,
                             pw=settings.iredmail_sql_db_password,
-                            charset='utf8')
+                            charset='utf8',
+                            **web_transport(settings, 'iredmail_sql', 'mysql', with_ssl=True))
 
         conn.supports_multiple_insert = True
 
