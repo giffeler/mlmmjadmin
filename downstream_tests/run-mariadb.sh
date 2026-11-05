@@ -58,6 +58,11 @@ if [[ -n "${SOCKET_TEST_USER:-}" ]]; then
     chmod 750 "$socket_test_root"
     sudo chgrp socketdb-test "$socket_test_path"
     chmod 660 "$socket_test_path"
+    # Do not grant service accounts access to the runner's private checkout.
+    # Test an archive of the exact committed source in the shared test area.
+    mkdir "$socket_test_root/source"
+    git archive HEAD | tar -x -C "$socket_test_root/source"
+    cd "$socket_test_root/source"
 fi
 run_tests() {
     if [[ -n "${SOCKET_TEST_USER:-}" ]]; then
